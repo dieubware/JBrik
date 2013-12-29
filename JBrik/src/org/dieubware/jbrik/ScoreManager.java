@@ -7,13 +7,15 @@ import java.util.Observable;
 public class ScoreManager extends Observable {
 	
 	
-	public ScoreManager() {
-		otherScore = new HashMap<String, Integer>();
-	}
 	
 	
 	protected int score;
 	protected Map<String, Integer> otherScore;
+	
+
+	public ScoreManager() {
+		otherScore = new HashMap<String, Integer>();
+	}
 	
 	public void addScore(int score) {
 		setScore(this.score + score);
@@ -36,9 +38,11 @@ public class ScoreManager extends Observable {
 		return score;
 	}
 	public int getOtherScore(String key) {
-		return otherScore.get(key);
+		System.err.println("Map is : " + otherScore);
+		if(otherScore.containsKey(key))
+			return otherScore.get(key);
+		else
+			return 0;
 	}
 	
-	
-
 }

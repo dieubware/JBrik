@@ -221,10 +221,12 @@ public class Grid extends Observable  {
     /**
      * Find the lines that does not contain empty cells and delete them
      * This method is originallt used by Tetris but can serve for other brik-based games
+     * @return number of deleted lines
      */
-	protected void checkForLines() {
+	protected int checkForLines() {
 		System.out.println("Checking for lines...");
 		int line = 0;
+		int nbLines = 0;
 		for(int i = 0; i<grid.length; i++) {
 			if(i%width == 0)
 				line = 0;
@@ -234,11 +236,10 @@ public class Grid extends Observable  {
 				System.out.println("Line found !");
 				deleteLine(i/width);
 				i=i-width;
-
+				nbLines++;
 			}
-
-
 		}
+		return nbLines;
 	}
 
 	/**
