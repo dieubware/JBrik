@@ -49,6 +49,13 @@ public class Grid extends Observable  {
     public Grid(int nbColors, int length, boolean gravity) {
         this(nbColors, length, length, gravity);
     }
+    
+    public void initGrid() {
+    	for(int i = 0; i < width*height; i++) {
+            grid[i] = 0;
+
+        }
+    }
 
     /**
      * Fills the grid with random colors

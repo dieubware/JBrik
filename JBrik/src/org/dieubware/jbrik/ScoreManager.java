@@ -38,11 +38,12 @@ public class ScoreManager extends Observable {
 		return score;
 	}
 	public int getOtherScore(String key) {
-		System.err.println("Map is : " + otherScore);
 		if(otherScore.containsKey(key))
 			return otherScore.get(key);
 		else
 			return 0;
 	}
+	
+	
 	
 }
