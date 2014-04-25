@@ -1,6 +1,7 @@
 package org.dieubware.jbrik;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.Comparator;
 
 /**
  * Multiple tiles with matching color
@@ -9,11 +10,23 @@ import java.util.Set;
  */
 
 public class Path {
-	Set<Cell> cells;
+	SortedSet<Cell> cells;
 	int t;
 	
 	public Path() {
-		cells = new HashSet<Cell>();
+		cells = new TreeSet<Cell>(new Comparator<Cell>() {
+
+			@Override
+			public int compare(Cell c1, Cell c2) {
+				int ret = c2.p().y - c1.p().y;
+				if(ret == 0) {
+					ret = c1.p().x - c2.p().x;
+				}
+				return ret;
+			}
+			
+		});
+		
 	}
 	
 	public void addCell(Cell c) {
@@ -69,4 +82,19 @@ public class Path {
         }
         return false;
     }
+
+	public void addUniqueCell(Cell c) {
+		if(!this.containsPoint(c.p())) {
+			this.addCell(c);
+		}
+	}
+
+	public Cell getCellAt(Point p) {
+		for(Cell c : cells) {
+			if(c.p().equals(p)) {
+				return c;
+			}
+		}
+		return null;
+	}
 }

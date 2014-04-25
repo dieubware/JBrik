@@ -18,9 +18,9 @@ public class PathList {
 	public void addToPath(Cell c1,Cell c2) {
 		boolean contains = false;
 		for(Path p : pathList) {
-			contains = p.contains(c1);
-			if(contains == true) {
-				p.addCell(c2);
+			contains = p.containsPoint(c1.p());
+			if(contains) {
+				p.addUniqueCell(c2);
 				return;
 			}
 		}

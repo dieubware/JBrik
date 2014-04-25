@@ -1,5 +1,7 @@
 package org.dieubware.jbrik;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Observable;
 /**
@@ -14,6 +16,7 @@ public class Grid extends Observable  {
     protected int width;
     protected int height;
     protected int nbColors;
+    protected Collection<Point> justDeleted;
 
     /**
      * Grid representation, of size width*height
@@ -27,6 +30,7 @@ public class Grid extends Observable  {
         this.gravity = gravity;
         this.nbColors = nbColors;
         grid = new int[width*height];
+        justDeleted = new ArrayList<Point>();
     }
 
     public Grid(int nbColors, int width, int height) {
@@ -68,6 +72,14 @@ public class Grid extends Observable  {
 
     }
  
+    public void delete4Paths(int minSize) {
+    	for(Path p : find4Paths().pathList) {
+    		if(p.cells.size() >= minSize) {
+    			deletePath(p);
+    		}
+    	}
+    }
+    
     /**
      * Returns a list containig the paths (4-neighbors) contained in the grid
      * @return path list
@@ -78,8 +90,8 @@ public class Grid extends Observable  {
             for(int i = 0; i< width; i++) {
                 int current = grid[getIndex(i,j)];
                 for(Cell c : neighbors(i, j, 4)) {
-                    if(c.getVal() == grid[current]) {
-                        pList.addToPath(new Cell(grid[current], i, j), c);
+                    if(c.getVal() == current && current != 0) {
+                        pList.addToPath(new Cell(grid[getIndex(i,j)], i, j), c);
                     }
                 }
             }
@@ -89,7 +101,22 @@ public class Grid extends Observable  {
 
         return pList;
     }
+    public void deletePath(Path path) {
+    	System.out.println("---");
+    	for(Cell c : path.cells) {
+    		int val = c.getVal();
+    		Point p = c.getPoint();
+    		System.out.println("treating : " + p);
+    		while(val != 0 && p.y < height-1) {
+    			p.y++;
+    			val = grid[getIndex(p)];
+    			grid[getIndex(p.x, p.y-1)] = val;
+    			
+    		}
+    	}
+    }
 
+    
 
      /**
      * Returns the neighbors of the given cell
@@ -106,7 +133,7 @@ public class Grid extends Observable  {
         if(dimension == 4) {
 
             //UP
-            if(y>1) {
+            if(y>0) {
                 result.add(new Cell(grid[getIndex(x, y-1)], x, y-1));
             }
             //DOWN
@@ -114,11 +141,11 @@ public class Grid extends Observable  {
                 result.add(new Cell(grid[getIndex(x, y+1)], x, y+1));
             }
             //LEFT
-            if(x > 1) {
+            if(x > 0) {
                 result.add(new Cell(grid[getIndex(x-1, y)], x-1, y));
             }
             //RIGHT
-            if(x < width -1) {
+            if(x < width-1) {
                 result.add(new Cell(grid[getIndex(x+1, y)], x+1, y));
             }
         }
@@ -180,20 +207,25 @@ public class Grid extends Observable  {
         return grid[getIndex(x,y)];
     }
 
+    
     @Override
     public String toString() {
+    	return toString(this.grid);
+    }
+    
+    public String toString(int[] grid) {
         String str = "   ";
         for(int i =0; i< width; i++)
             str += " " + i + " ";
         str+="\n\n";
 
-        for(int i =0; i < width*height; i++) {
-            if(i%width == 0)
-                str+=i/height + "  ";
-            str+= " "+grid[i]+" ";
-            if((i+1)%width == 0) {
-                str+="\n";
-            }
+        for(int i =height-1; i >=0; i--) {
+        	for(int j = 0; j < width; j++) {
+	            if(j == 0)
+	                str+="\n" + i + "  ";
+	            str+= " "+grid[getIndex(j,i)]+" ";
+	            
+        	}
         }
         return str;
     }
@@ -231,6 +263,7 @@ public class Grid extends Observable  {
      * @return number of deleted lines
      */
 	protected int checkForLines() {
+		justDeleted.clear();
 		System.out.println("Checking for lines...");
 		int line = 0;
 		int nbLines = 0;
@@ -256,7 +289,9 @@ public class Grid extends Observable  {
 	protected void deleteLine(int line) {
 		for(int i = (line+1)*width; i<grid.length; i++) {
 			//We put down every fucking square
-			grid[getIndex(getCoord(i).x, getCoord(i).y-1)] = grid[i];
+			Point p = new Point(getCoord(i).x, getCoord(i).y-1);
+			grid[getIndex(p)] = grid[i];
+			justDeleted.add(p);
 
 		}
 	}
@@ -266,4 +301,8 @@ public class Grid extends Observable  {
     	return grid;
     }
 
+    public Collection<Point> getJustDeleted() {
+    	return justDeleted;
+    }
+    
 }

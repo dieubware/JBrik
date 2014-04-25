@@ -36,9 +36,17 @@ public class Cell {
 	    return p;
 	}
 	
+	public Point p() {
+		return this.getPoint();
+	}
+	
 
 	public int getVal() {
 		return val;
+	}
+	
+	public void setVal(int value) {
+		this.val = value;
 	}
 	
 	public String toString() {
